@@ -15,6 +15,11 @@ config SH_MIPI_DSI
 config SH_LCD_MIPI_DSI
 	bool
 
+config JZ_MIPI_DSI
+	bool "jz mipi dsi interface"
+	depends on FB_JZ_V12 || DRM_JZDRM
+	default n
+
 source "drivers/char/agp/Kconfig"
 
 source "drivers/gpu/vga/Kconfig"
@@ -22,6 +27,10 @@ source "drivers/gpu/vga/Kconfig"
 source "drivers/gpu/drm/Kconfig"
 
 source "drivers/gpu/host1x/Kconfig"
+
+source "drivers/gpu/vivante/Kconfig"
+
+source "drivers/video/jz_ipu/Kconfig"
 
 config VGASTATE
        tristate
@@ -2512,4 +2521,47 @@ config FB_SSD1307
 	  This driver implements support for the Solomon SSD1307
 	  OLED controller over I2C.
 
+source "drivers/video/jz_fb_v12/Kconfig"
+source "drivers/video/jz_fb_v11/Kconfig"
+source "drivers/video/jz_fb_v13/Kconfig"
+source "drivers/video/jz_vfb/Kconfig"
+
+
+config FB_VSYNC_SKIP
+        int "Vsync skip ratio[0..9]"
+        depends on FB
+        default 9
+        help
+          Vsync skip ratio
+
+choice
+	depends on FB && (SOC_4780 || SOC_4775 || SOC_M200 ||SOC_X1000)
+	prompt "allocation frame buffer"
+	default THREE_FRAME_BUFFERS
+	help
+		number of Frame Buffer choose
+config ONE_FRAME_BUFFERS
+       bool "alloc 1 frame buffers"
+       help
+	one frame buffer
+
+config TWO_FRAME_BUFFERS
+       bool "alloc 2 frame buffers"
+       help
+	double frame buffer
+
+config THREE_FRAME_BUFFERS
+       bool "alloc 3 frame buffers"
+       help
+	treble frame buffer
+endchoice
+
+config FB_JZ_DEBUG
+        bool "fb test for displaying color bar"
+        depends on FB_JZ_V12 || FB_JZ_V11
+        default n
+        help
+           fb test for displaying color bar in your board.
+
+source "drivers/video/jz_vpu/Kconfig"
 endmenu
